@@ -59,9 +59,7 @@ func (obj *JsonObj) Get(key string) (value *JsonObj) {
 func (obj *JsonObj) GetInt(key string) (value int, ok bool) {
 	sObj := obj.Get(key)
 	if sObj == nil {
-		if isDebug {
-			fmt.Println("key", key, "not found")
-		}
+		log("key", key, "not found")
 		return
 	}
 	return sObj.Int()
@@ -69,9 +67,7 @@ func (obj *JsonObj) GetInt(key string) (value int, ok bool) {
 func (obj *JsonObj) GetFloat64(key string) (value float64, ok bool) {
 	sObj := obj.Get(key)
 	if sObj == nil {
-		if isDebug {
-			fmt.Println("key", key, "not found")
-		}
+		log("key", key, "not found")
 		return
 	}
 	return sObj.Float64()
@@ -79,9 +75,7 @@ func (obj *JsonObj) GetFloat64(key string) (value float64, ok bool) {
 func (obj *JsonObj) GetString(key string) (value string, ok bool) {
 	sObj := obj.Get(key)
 	if sObj == nil {
-		if isDebug {
-			fmt.Println("key", key, "not found")
-		}
+		log("key", key, "not found")
 		return
 	}
 	return sObj.String()
@@ -89,9 +83,7 @@ func (obj *JsonObj) GetString(key string) (value string, ok bool) {
 func (obj *JsonObj) GetBool(key string) (value bool, ok bool) {
 	sObj := obj.Get(key)
 	if sObj == nil {
-		if isDebug {
-			fmt.Println("key", key, "not found")
-		}
+		log("key", key, "not found")
 		return
 	}
 	return sObj.Bool()
@@ -128,38 +120,44 @@ func (obj *JsonObj) ToJsonString() string {
 	return ""
 }
 func NewJsonObj(obj interface{}) *JsonObj {
-	result := &JsonObj{}
+	result := &JsonObj{
+		value: obj,
+	}
 	kind := reflect.TypeOf(obj).Kind()
 	switch kind {
 	case reflect.String:
 		str := obj.(string)
-		if strings.HasPrefix(str, "[") {
-			result.Type = JsonTypeArray
-			var tmpSlice []interface{}
-			err := json.Unmarshal([]byte(str), &tmpSlice)
-			if err != nil {
-				fmt.Println("z3mb4ixchn", "NewJsonObj", err)
-				return nil
-			}
-			for _, one := range tmpSlice {
-				result.arrayValue = append(result.arrayValue, NewJsonObj(one))
-			}
-		} else if strings.HasPrefix(str, "{") {
+		// json string for struct
+		if strings.HasPrefix(str, "{") {
 			result.Type = JsonTypeStruct
-			result.structValue= map[string]*JsonObj{}
+			result.structValue = map[string]*JsonObj{}
 			var tmpObj map[string]interface{}
 			err := json.Unmarshal([]byte(str), &tmpObj)
 			if err != nil {
-				fmt.Println("0hsxpy1qr5", "NewJsonObj", err)
+				log("NewJsonObj", JsonTypeStruct, obj, err)
 				return nil
 			}
 			for key, one := range tmpObj {
 				result.structValue[key] = NewJsonObj(one)
 			}
-		} else { // if string not start with [ or { ,recognized as string
-			result.Type = JsonTypeString
+			return result
 		}
-		result.value = obj
+		// json string for array
+		if strings.HasPrefix(str, "[") {
+			result.Type = JsonTypeArray
+			var tmpSlice []interface{}
+			err := json.Unmarshal([]byte(str), &tmpSlice)
+			if err != nil {
+				log("NewJsonObj", JsonTypeArray, obj, err)
+				return nil
+			}
+			for _, one := range tmpSlice {
+				result.arrayValue = append(result.arrayValue, NewJsonObj(one))
+			}
+			return result
+		}
+		// if string not start with [ or {, recognized as string
+		result.Type = JsonTypeString
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		result.Type = JsonTypeNumber
@@ -186,4 +184,10 @@ func SetDebugModule() {
 }
 func SetReleaseModule() {
 	isDebug = false
+}
+
+func log(slice ...interface{}){
+	if isDebug{
+		fmt.Println(slice...)
+	}
 }
