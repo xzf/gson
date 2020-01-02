@@ -137,6 +137,7 @@ func NewJsonObj(obj interface{}) *JsonObj {
 			result.Type = JsonTypeStruct
 			result.structValue = map[string]*JsonObj{}
 			var tmpObj map[string]interface{}
+			//todo find a way to kill this json.Unmarshal alloc
 			err := json.Unmarshal([]byte(str), &tmpObj)
 			if err != nil {
 				log("NewJsonObj", JsonTypeStruct, obj, err)
@@ -151,6 +152,7 @@ func NewJsonObj(obj interface{}) *JsonObj {
 		if strings.HasPrefix(str, "[") {
 			result.Type = JsonTypeArray
 			var tmpSlice []interface{}
+			//todo find a way to kill this json.Unmarshal alloc
 			err := json.Unmarshal([]byte(str), &tmpSlice)
 			if err != nil {
 				log("NewJsonObj", JsonTypeArray, obj, err)
@@ -167,9 +169,9 @@ func NewJsonObj(obj interface{}) *JsonObj {
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		result.Type = JsonTypeNumber
 		//todo find a way to kill this fmt.Sprint alloc
-		val, _ := strconv.Atoi(fmt.Sprint(obj))//all type cast to int
+		val, _ := strconv.Atoi(fmt.Sprint(obj)) //all type cast to int
 		result.value = val
-	case reflect.Float32, reflect.Float64://Float32 cast to Float64
+	case reflect.Float32, reflect.Float64: //Float32 cast to Float64
 		result.Type = JsonTypeNumber
 		//todo find a way to kill this fmt.Sprint alloc
 		val, _ := strconv.ParseFloat(fmt.Sprint(obj), 64)
@@ -177,11 +179,17 @@ func NewJsonObj(obj interface{}) *JsonObj {
 	case reflect.Bool:
 		result.Type = JsonTypeBoolean
 		result.value = obj
-	case reflect.Interface:
-		fmt.Println("????????")
+	//case reflect.Interface:
+	//	fmt.Println("????????")
 	default:
-		//todo obj to jsonObj
-		fmt.Println("un suupprot")
+		result.value = obj
+		//todo sorry,This solution is so stupid
+		str, err := json.Marshal(obj)
+		if err != nil {
+			log("NewJsonObj", reflect.Array)
+			return nil
+		}
+		return NewJsonObj(string(str))
 	}
 	return result
 }
@@ -193,8 +201,8 @@ func SetReleaseModule() {
 	isDebug = false
 }
 
-func log(slice ...interface{}){
-	if isDebug{
+func log(slice ...interface{}) {
+	if isDebug {
 		fmt.Println(slice...)
 	}
 }
