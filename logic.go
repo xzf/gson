@@ -100,6 +100,6 @@ func (obj *JsonObj) ToJsonString() string {
 	if err != nil {
 		log("JsonObj.ToJsonString", "json.Marshal", err)
 	}
-	//todo
+	//todo kill alloc
 	return string(bSlice)
 }
