@@ -35,7 +35,6 @@ func NewJsonObj(obj interface{}) *JsonObj {
 		value: obj,
 	}
 	kind := reflect.TypeOf(obj).Kind()
-	fmt.Println(kind,obj)
 	switch kind {
 	case reflect.Chan:
 		log("unsupport type",kind)

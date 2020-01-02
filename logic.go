@@ -76,7 +76,12 @@ func (obj *JsonObj) GetBool(key string) (value bool, ok bool) {
 	return sObj.Bool()
 }
 func (obj *JsonObj) GetArray(key string) []*JsonObj {
-	return obj.arrayValue
+	sObj := obj.Get(key)
+	if sObj == nil {
+		log("key", key, "not found")
+		return nil
+	}
+	return sObj.arrayValue
 }
 func (obj *JsonObj) GetItem(index int) *JsonObj {
 	if obj.Type != JsonTypeArray {

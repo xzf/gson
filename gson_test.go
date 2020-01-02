@@ -9,9 +9,6 @@ func TestGson(t *testing.T) {
 	SetDebugModule()
 	testSlice := []interface{}{
 		`{
-			"D":[1,2,3]
-		}`,
-		`{
 			"A":1,
 			"B":"2",
 			"C":false,
@@ -56,26 +53,18 @@ func TestGson(t *testing.T) {
 			panic("no pass")
 		}
 		switch index {
-		case 0:
-			//a, _ := obj.Get("A").Int()
-			//panicIfFalse(obj.Get("A").Type == JsonTypeNumber)
-			//panicIfFalse(a == 1)
-			//b, _ := obj.Get("B").String()
-			//panicIfFalse(obj.Get("B").Type == JsonTypeString)
-			//panicIfFalse(b == "2")
-			//c, ok := obj.Get("C").Bool()
-			//panicIfFalse(obj.Get("C").Type == JsonTypeBoolean)
-			//panicIfFalse(c == false && ok == true)
+		case 0, 1:
+			a, _ := obj.Get("A").Int()
+			panicIfFalse(obj.Get("A").Type == JsonTypeNumber)
+			panicIfFalse(a == 1)
+			b, _ := obj.Get("B").String()
+			panicIfFalse(obj.Get("B").Type == JsonTypeString)
+			panicIfFalse(b == "2")
+			c, ok := obj.Get("C").Bool()
+			panicIfFalse(obj.Get("C").Type == JsonTypeBoolean)
+			panicIfFalse(c == false && ok == true)
 			array := obj.GetArray("D")
 			panicIfFalse(obj.Get("D").Type == JsonTypeArray)
-			fmt.Println(len(array),array[0].value)
-			fmt.Println(len(array))
-			fmt.Println(len(array))
-			fmt.Println(len(array))
-			fmt.Println(len(array))
-			fmt.Println(len(array))
-			fmt.Println(len(array))
-			fmt.Println(len(array))
 			panicIfFalse(len(array) == 3)
 			d0, _ := array[0].Int()
 			panicIfFalse(d0 == 1)
@@ -89,7 +78,6 @@ func TestGson(t *testing.T) {
 			panicIfFalse(obj.Get("E").Get("E1") != nil)
 			ee1, _ := obj.Get("E").Get("E1").Int()
 			panicIfFalse(ee1 == 1)
-
 			panicIfFalse(obj.Get("E").Get("E2").Type == JsonTypeString)
 			panicIfFalse(obj.Get("E").Get("E2") != nil)
 			ee2, _ := obj.Get("E").Get("E2").String()
@@ -98,12 +86,41 @@ func TestGson(t *testing.T) {
 			panicIfFalse(obj.Get("E").Get("E3") != nil)
 			ee3, _ := obj.Get("E").Get("E3").Bool()
 			panicIfFalse(ee3 == true)
-		case 1:
+		//case 1:
 		case 2:
+			panicIfFalse(obj.value.(int) == 1)
 		case 3:
+			panicIfFalse(obj.value.(string) == "2")
 		case 4:
+			panicIfFalse(obj.value.(bool) == false)
 		case 5:
+			i1, _ := obj.GetItem(0).Int()
+			panicIfFalse(i1 == 1)
+			i2, _ := obj.GetItem(1).Int()
+			panicIfFalse(i2 == 2)
+			i3, _ := obj.GetItem(2).Int()
+			panicIfFalse(i3 == 3)
 		case 6:
+			int1,_:=obj.GetItem(0).GetInt("A")
+			panicIfFalse(int1 == 1)
+			str1,_:=obj.GetItem(0).GetString("B")
+			panicIfFalse(str1 == "2")
+			bool1,_:=obj.GetItem(0).GetBool("C")
+			panicIfFalse(bool1 == false)
+
+			int2,_:=obj.GetItem(1).GetInt("A")
+			panicIfFalse(int2 == 2)
+			str2,_:=obj.GetItem(1).GetString("B")
+			panicIfFalse(str2 == "3")
+			bool2,_:=obj.GetItem(1).GetBool("C")
+			panicIfFalse(bool2 == true)
+
+			int3,_:=obj.GetItem(2).GetInt("A")
+			panicIfFalse(int3 == 3)
+			str3,_:=obj.GetItem(2).GetString("B")
+			panicIfFalse(str3 == "4")
+			bool3,_:=obj.GetItem(2).GetBool("C")
+			panicIfFalse(bool3 == false)
 		}
 	}
 }
