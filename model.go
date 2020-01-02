@@ -35,7 +35,11 @@ func NewJsonObj(obj interface{}) *JsonObj {
 		value: obj,
 	}
 	kind := reflect.TypeOf(obj).Kind()
+	fmt.Println(kind,obj)
 	switch kind {
+	case reflect.Chan:
+		log("unsupport type",kind)
+		return nil
 	case reflect.String:
 		str := obj.(string)
 		// json string for struct
@@ -88,6 +92,7 @@ func NewJsonObj(obj interface{}) *JsonObj {
 	//case reflect.Interface:
 	//	fmt.Println("????????")
 	default:
+
 		result.value = obj
 		//todo sorry,This solution is so stupid
 		str, err := json.Marshal(obj)

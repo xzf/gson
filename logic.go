@@ -3,33 +3,40 @@ package gson
 import (
 	"fmt"
 	"strconv"
+	"reflect"
 )
 
 func (obj *JsonObj) Int() (int, bool) {
-	intValue, ok := obj.value.(int)
-	if !ok && isDebug {
-		fmt.Println("obj not int")
+	var intValue int
+	float64Value, ok := obj.value.(float64)
+	if !ok {
+		intValue, ok = obj.value.(int)
+		if !ok && isDebug {
+			fmt.Println("obj not int", reflect.TypeOf(obj.value))
+		}
+	} else {
+		intValue = int(float64Value)
 	}
 	return intValue, ok
 }
 func (obj *JsonObj) Float64() (float64, bool) {
 	floatValue, ok := obj.value.(float64)
 	if !ok && isDebug {
-		fmt.Println("obj not float64")
+		fmt.Println("obj not float64", reflect.TypeOf(obj.value))
 	}
 	return floatValue, ok
 }
 func (obj *JsonObj) String() (value string, ok bool) {
 	value, ok = obj.value.(string)
 	if !ok && isDebug {
-		fmt.Println("obj not string")
+		fmt.Println("obj not string", reflect.TypeOf(obj.value))
 	}
 	return
 }
 func (obj *JsonObj) Bool() (value bool, ok bool) {
 	value, ok = obj.value.(bool)
 	if !ok && isDebug {
-		fmt.Println("obj not bool")
+		fmt.Println("obj not bool", reflect.TypeOf(obj.value))
 	}
 	return
 }
