@@ -1,5 +1,10 @@
 package gson
 
+/*
+ * auth :xzf
+ * email:xzf12315@gmail.com
+ */
+
 import (
 	"reflect"
 	"fmt"
@@ -161,11 +166,13 @@ func NewJsonObj(obj interface{}) *JsonObj {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		result.Type = JsonTypeNumber
-		val, _ := strconv.Atoi(fmt.Sprintln(obj))
+		//todo find a way to kill this fmt.Sprint alloc
+		val, _ := strconv.Atoi(fmt.Sprint(obj))//all type cast to int
 		result.value = val
-	case reflect.Float32, reflect.Float64:
+	case reflect.Float32, reflect.Float64://Float32 cast to Float64
 		result.Type = JsonTypeNumber
-		val, _ := strconv.ParseFloat(fmt.Sprintln(obj), 64)
+		//todo find a way to kill this fmt.Sprint alloc
+		val, _ := strconv.ParseFloat(fmt.Sprint(obj), 64)
 		result.value = val
 	case reflect.Bool:
 		result.Type = JsonTypeBoolean
