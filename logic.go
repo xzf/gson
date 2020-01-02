@@ -2,8 +2,8 @@ package gson
 
 import (
 	"fmt"
-	"strconv"
 	"reflect"
+	"encoding/json"
 )
 
 func (obj *JsonObj) Int() (int, bool) {
@@ -96,18 +96,10 @@ func (obj *JsonObj) Interface() interface{} {
 	return obj.value
 }
 func (obj *JsonObj) ToJsonString() string {
-	switch obj.Type {
-	case JsonTypeString:
-		return obj.value.(string)
-	case JsonTypeNumber:
-		//todo int and float
-		//return fmt.Sprint(obj.value)
-	case JsonTypeBoolean:
-		return strconv.FormatBool(obj.value.(bool))
-	case JsonTypeArray:
-		//todo
-	case JsonTypeStruct:
-		//todo
+	bSlice, err := json.Marshal(obj.value)
+	if err != nil {
+		log("JsonObj.ToJsonString", "json.Marshal", err)
 	}
-	return ""
+	//todo
+	return string(bSlice)
 }
