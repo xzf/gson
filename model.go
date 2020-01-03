@@ -21,7 +21,6 @@ const (
 	JsonTypeStruct  = "Struct"
 )
 
-
 type JsonObj struct {
 	Type        string
 	value       interface{}
@@ -29,16 +28,13 @@ type JsonObj struct {
 	arrayValue  []*JsonObj
 }
 
-
 func NewJsonObj(obj interface{}) *JsonObj {
 	result := &JsonObj{
 		value: obj,
 	}
 	kind := reflect.TypeOf(obj).Kind()
 	switch kind {
-	case reflect.Chan:
-		log("unsupport type",kind)
-		return nil
+
 	case reflect.String:
 		str := obj.(string)
 		// json string for struct
@@ -89,9 +85,8 @@ func NewJsonObj(obj interface{}) *JsonObj {
 		result.Type = JsonTypeBoolean
 		result.value = obj
 	//case reflect.Interface:
-	//	fmt.Println("????????")
-	default:
-
+	//fmt.Println("????????")
+	case reflect.Map, reflect.Array, reflect.Struct, reflect.Slice:
 		result.value = obj
 		//todo sorry,This solution is so stupid
 		str, err := json.Marshal(obj)
@@ -100,6 +95,9 @@ func NewJsonObj(obj interface{}) *JsonObj {
 			return nil
 		}
 		return NewJsonObj(string(str))
+	default:
+		log("unsupport type", kind)
+		return nil
 	}
 	return result
 }

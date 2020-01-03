@@ -103,3 +103,4 @@ func (obj *JsonObj) ToJsonString() string {
 	//todo kill alloc
 	return string(bSlice)
 }
+
