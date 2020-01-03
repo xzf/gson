@@ -34,7 +34,15 @@ func NewJsonObj(obj interface{}) *JsonObj {
 	}
 	kind := reflect.TypeOf(obj).Kind()
 	switch kind {
-
+	case reflect.Map, reflect.Array, reflect.Struct, reflect.Slice:
+		result.value = obj
+		//todo sorry,This solution is so stupid
+		str, err := json.Marshal(obj)
+		if err != nil {
+			log("NewJsonObj", reflect.Array)
+			return nil
+		}
+		return NewJsonObj(string(str))
 	case reflect.String:
 		str := obj.(string)
 		// json string for struct
@@ -84,17 +92,6 @@ func NewJsonObj(obj interface{}) *JsonObj {
 	case reflect.Bool:
 		result.Type = JsonTypeBoolean
 		result.value = obj
-	//case reflect.Interface:
-	//fmt.Println("????????")
-	case reflect.Map, reflect.Array, reflect.Struct, reflect.Slice:
-		result.value = obj
-		//todo sorry,This solution is so stupid
-		str, err := json.Marshal(obj)
-		if err != nil {
-			log("NewJsonObj", reflect.Array)
-			return nil
-		}
-		return NewJsonObj(string(str))
 	default:
 		log("unsupport type", kind)
 		return nil
